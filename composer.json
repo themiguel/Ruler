@@ -1,0 +1,14 @@
+{
+	"name": "themiguel/ruler",
+	"version": "1.0.0",
+	"description": "A simple rules based package",
+	"autoload": {
+		"psr-4": {
+			"Ruler\\": "ruler/",
+			"Ruler\\Lexer\\": "ruler/lexer/"
+		}
+	},
+	"require": {
+		"phpunit/phpunit": "^9"
+	}
+}
