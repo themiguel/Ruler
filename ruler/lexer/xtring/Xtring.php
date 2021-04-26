@@ -57,6 +57,29 @@
 		}
 
 		/**
+		 * Return whether the current or peek character is a letter
+		 * @param bool $peek Whether the use peek or not
+		 * @return bool
+		 */
+		public function isAlphabet(bool $peek = false): bool{
+			# Get the current code
+			$code = $peek ? $this->peekCode() : $this->currentCode();
+
+			# Return whether the code is alphabet or not
+			return ($code >= 65 && $code <= 90) || ($code >= 97 && $code <= 122);
+		}
+
+		/**
+		 * Return whether the current or peek character is alphanumeric or not
+		 * @param bool $peek Whether the use peek or not
+		 * @return bool
+		 */
+		public function isAlphanumeric(bool $peek = false): bool{
+			# Return whether we have a alphabet or digit
+			return $this->isAlphabet($peek) || $this->isDigit($peek);
+		}
+
+		/**
 		 * Returns whether the current character is a digit or not
 		 * @param bool $peek Whether the check peek character or not
 		 * @return bool
