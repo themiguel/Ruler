@@ -56,6 +56,17 @@
 			return mb_ord($this->string[$this->curr], 'utf-8');
 		}
 
+		public function is(string $char, bool $peek = false): bool{
+			# Check the peek
+			if( $peek ){
+				# Use the peek
+				return $char == $this->peek();
+			}
+
+			# Return whether the current matches the char
+			return $char == $this->string[$this->curr];
+		}
+
 		/**
 		 * Return whether the current or peek character is a letter
 		 * @param bool $peek Whether the use peek or not
@@ -102,7 +113,7 @@
 			$char = $peek ? $this->peek() : $this->current();
 
 			# Check if the character a symbol
-			return in_array($char, ['{', '}', '(', ')', '>', '<', '=', ';']);
+			return in_array($char, ['{', '}', '(', ')', '>', '<', '=', ';', '?']);
 		}
 
 		/**

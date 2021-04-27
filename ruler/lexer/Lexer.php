@@ -1,6 +1,8 @@
 <?php
 	namespace Ruler\Lexer;
 
+	use \Exception;
+	use Ruler\Lexer\Tokens\Quotes;
 	use Ruler\Lexer\Xtring\Xtring;
 
 	use Ruler\Lexer\Tokens\Identifier;
@@ -36,29 +38,74 @@
 					# Add the symbol
 					$token = $xtring->current();
 
-					# Check the peek character
-					if( $xtring->isSymbol(true) ){
-						# The peek is a symbol as well
-						# Add the peek then go to the next
-						$token .= $xtring->peek();
-						$xtring->next();
-					}
-
-					# Create the token
-					$tokens[] = new Symbol($token);
-				}
-				else if( $xtring->isDigit() ){
-					# Add the current digit
-					$token = $xtring->current();
-
-					# Loop as long as we have digits
-					while( $xtring->next() && $xtring->isDigit() ){
+					# Loop as long as we have symbols
+					while( $xtring->next() && $xtring->isSymbol() ){
 						# Add the token
 						$token .= $xtring->current();
 					}
 
 					# Create the token
+					$tokens[] = new Symbol($token);
+				}
+				else if( $xtring->isDigit() || $xtring->is('.') ){
+					# The token
+					$token = '';
+
+					# Check the current character
+					if( $xtring->is('.') ){
+						# Add a zero
+						$token .= '0';
+					}
+
+					# Add the current digit or dot
+					$token .= $xtring->current();
+
+					# Loop as long as we have digits
+					while( $xtring->next() && ($xtring->isDigit() || $xtring->is('.')) ){
+						# Add the token
+						$token .= $xtring->current();
+					}
+
+					# Check the token
+					if( is_numeric($token) === false ){
+						# Invalid float
+						throw new Exception('Lexer: invalid numeric value `'.$token.'`');
+					}
+
+					# Create the token
 					$tokens[] = new Number($token);
+				}
+				else if( $xtring->is('"') ){
+					# The current token
+					$token = '';
+
+					# Check the peek character for empty string
+					if( $xtring->is('"', true) ){
+						# Got an empty quotes
+						# Add an empty quotes
+						$tokens[] = new Quotes('');
+
+						# Go to the next token
+						$xtring->next();
+					}
+					else{
+						# String is not empty
+						# Loop until we find the next quote
+						while( $xtring->next() && $xtring->is('"') === false ){
+							# Add the token
+							$token .= $xtring->current();
+						}
+
+						# Current character should be a quote
+						# Check to make make sure
+						if( $xtring->is('"') === false ){
+							# There was an error, either not ending the string
+							throw new Exception('Lexer: Missing closing quotes.');
+						}
+
+						# Create the string token
+						$tokens[] = new Quotes($token);
+					}
 				}
 			} while( $xtring->next() );
 
