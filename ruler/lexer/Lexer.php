@@ -10,7 +10,14 @@
 	use Ruler\Lexer\Tokens\Symbol;
 
 	class Lexer{
-
+		/**
+		 * Tokenize a given rule
+		 * Return a list of token
+		 * Throws an exception if rule couldn't be converted
+		 * @param string $rule The rule to tokenize
+		 * @return array
+		 * @throws Exception
+		 */
 		public function tokenize(string $rule): array{
 			# Create a xtring
 			$xtring = new Xtring($rule);
@@ -26,7 +33,7 @@
 					$token = $xtring->current();
 
 					# Loop through the alphanumeric values
-					while( $xtring->next() && $xtring->isAlphanumeric() ){
+					while( $xtring->isAlphanumeric(true) && $xtring->next() ){
 						# Add the token
 						$token .= $xtring->current();
 					}
@@ -39,7 +46,7 @@
 					$token = $xtring->current();
 
 					# Loop as long as we have symbols
-					while( $xtring->next() && $xtring->isSymbol() ){
+					while( $xtring->isSymbol(true) && $xtring->next() ){
 						# Add the token
 						$token .= $xtring->current();
 					}
@@ -61,7 +68,7 @@
 					$token .= $xtring->current();
 
 					# Loop as long as we have digits
-					while( $xtring->next() && ($xtring->isDigit() || $xtring->is('.')) ){
+					while( ($xtring->isDigit(true) || $xtring->is('.', true)) && $xtring->next() ){
 						# Add the token
 						$token .= $xtring->current();
 					}
@@ -91,17 +98,20 @@
 					else{
 						# String is not empty
 						# Loop until we find the next quote
-						while( $xtring->next() && $xtring->is('"') === false ){
+						while( $xtring->is('"', true) === false && $xtring->next() ){
 							# Add the token
 							$token .= $xtring->current();
 						}
 
-						# Current character should be a quote
-						# Check to make make sure
-						if( $xtring->is('"') === false ){
+						# Peek character should be a quote
+						# Check to make make sure it is
+						if( $xtring->is('"', true) === false ){
 							# There was an error, either not ending the string
 							throw new Exception('Lexer: Missing closing quotes.');
 						}
+
+						# Go to the next quotes
+						$xtring->next();
 
 						# Create the string token
 						$tokens[] = new Quotes($token);
