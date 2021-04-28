@@ -80,4 +80,16 @@
 			$this->assertEquals('func', $tokens[2]->getValue());
 			$this->assertEquals('()', $tokens[3]->getValue());
 		}
+
+		public function testSimpleExpression():void{
+			$lexer = new Lexer();
+			$tokens = $lexer->tokenize('1 + 2');
+			$this->assertEquals(3, count($tokens));
+			$this->assertInstanceOf(Number::class, $tokens[0]);
+			$this->assertInstanceOf(Symbol::class, $tokens[1]);
+			$this->assertInstanceOf(Number::class, $tokens[2]);
+			$this->assertEquals(1, $tokens[0]->getValue());
+			$this->assertEquals('+', $tokens[1]->getValue());
+			$this->assertEquals(2, $tokens[2]->getValue());
+		}
 	}

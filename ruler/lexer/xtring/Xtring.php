@@ -113,7 +113,7 @@
 			$char = $peek ? $this->peek() : $this->current();
 
 			# Check if the character a symbol
-			return in_array($char, ['{', '}', '(', ')', '>', '<', '=', ';', ':', '?']);
+			return in_array($char, ['{', '}', '(', ')', '>', '<', '=', ';', ':', '?', '+', '-', '*', '/']);
 		}
 
 		/**
