@@ -25,7 +25,7 @@
 
 			# The list of nodes
 			# Convert all the tokens into nodes
-			$nodes = array_map(function($tok){ return new Node($tok); }, $tokens);
+			$nodes = array_map(function($tok){ return new Node('node', $tok); }, $tokens);
 
 			# Finished flag
 			$finished = false;
@@ -41,15 +41,14 @@
 				 */
 				foreach($this->grammar as $prod){
 					# Check if the production matches
-					if( $prod->match($nodes) ){
-						echo 'Found a match<br>';
-						echo "<pre>", print_r($prod, true), "</pre>";
-						echo "<pre>", print_r($nodes, true), "</pre>";
-						exit;
+					# Find and replace
+					if( $prod->reduce($nodes) ){
+						# Did a replace
+						$finished = false;
 					}
 				}
 			}
 
-//			echo "<pre>", print_r($nodes, true), "</pre>";
+			echo "<pre>", print_r($nodes, true), "</pre>";
 		}
 	}

@@ -15,7 +15,7 @@
 			# Check if the production has already been added
 			if( isset($this->prods[$name]) === false ){
 				# Create the production
-				$this->prods[$name] = new Production();
+				$this->prods[$name] = new Production($name);
 			}
 
 			# Add the rule to the production
