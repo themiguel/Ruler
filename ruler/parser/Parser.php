@@ -13,19 +13,33 @@
 		 */
 		protected $grammar;
 
+		/**
+		 * Parser constructor.
+		 * Initializes the constructor
+		 * @param Grammar $grammar The grammar to parse with
+		 */
 		public function __construct(Grammar $grammar){
 			# Initialize the parser
 			$this->grammar = $grammar;
 		}
 
-		public function build(string $input): void{
+		/**
+		 * Parses a input to an AST
+		 * Returns a list of parent nodes of the AST
+		 * @param string $input The input to parse
+		 * @return array
+		 * @throws \Exception
+		 */
+		public function parse(string $input): array{
 			# Get the tokens of the input
-			$lexer = new Lexer();
+			$lexer  = new Lexer();
 			$tokens = $lexer->tokenize($input);
 
 			# The list of nodes
 			# Convert all the tokens into nodes
-			$nodes = array_map(function($tok){ return new Node('node', $tok); }, $tokens);
+			$nodes = array_map(function($tok){
+				return new Node('node', $tok);
+			}, $tokens);
 
 			# Finished flag
 			$finished = false;
@@ -39,7 +53,7 @@
 				 * Loop through the grammar
 				 * @var Production $prod
 				 */
-				foreach($this->grammar as $prod){
+				foreach( $this->grammar as $prod ){
 					# Check if the production matches
 					# Find and replace
 					if( $prod->reduce($nodes) ){
@@ -49,6 +63,7 @@
 				}
 			}
 
-			echo "<pre>", print_r($nodes, true), "</pre>";
+			# Return the nodes
+			return $nodes;
 		}
 	}

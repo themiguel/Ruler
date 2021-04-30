@@ -34,6 +34,11 @@
 			$this->children[] = $node;
 		}
 
+		public function getChildrenCount(): int{
+			# Return the count of children
+			return count($this->children);
+		}
+
 		public function getName(): string{
 			# Return the name of the node
 			return $this->name;
