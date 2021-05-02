@@ -19,6 +19,15 @@
 		}
 
 		/**
+		 * Adds an array of values to the environment
+		 * @param array $values The values to add, indexed by name
+		 */
+		public function add(array $values): void{
+			# Merge the arrays
+			$this->vars = array_merge($this->vars, $values);
+		}
+
+		/**
 		 * Returns the value of a variable
 		 * @param string $name The name of the variable
 		 * @return mixed
