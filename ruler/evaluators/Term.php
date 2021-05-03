@@ -33,7 +33,6 @@
 			}
 			else if( $node->getTokenClass() === 'Number' ){
 				# Return the number of the token
-				echo $token->getValue();
 				return $token->getValue();
 			}
 
