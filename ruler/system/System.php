@@ -32,21 +32,22 @@
 
 		/**
 		 * Adds a new evaluator
+		 * @param string    $target    The target node
 		 * @param Evaluator $evaluator The evaluator to add
 		 */
-		public function add(Evaluator $evaluator): void{
+		public function add(string $target, Evaluator $evaluator): void{
 			# Add the evaluator
-			$this->evaluators[] = $evaluator;
+			$this->evaluators[$target] = $evaluator;
 		}
 
 		public function evaluate(Node $node){
 			# Check if there's a evaluator for the node
 			if( isset($this->evaluators[$node->getName()]) === false ){
 				# No evaluator found
-				throw new \Exception('Cannot evaluate token `'.$node->getName().'`');
+				throw new \Exception('Cannot evaluate token `' . $node->getName() . '`');
 			}
 
 			# Evaluate the node
-			return $this->evaluators[$node->getName()]->evalute($node);
+			return $this->evaluators[$node->getName()]->evaluate($this->environment, $node);
 		}
 	}

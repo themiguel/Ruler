@@ -54,6 +54,20 @@
 		}
 
 		/**
+		 * Adds a new evaluator onto the system
+		 * @param string $target The target node
+		 * @param string $class  The evaluator class to add
+		 * @throws \ReflectionException
+		 */
+		public function evaluator(string $target, string $class): void{
+			# Create the reflection class
+			$cls = new \ReflectionClass($class);
+
+			# Add the evaluator
+			$this->system->add($target, $cls->newInstance($this->system));
+		}
+
+		/**
 		 * Loads a grammar configuration file
 		 * @param string $file The file to load
 		 * @throws Exception
@@ -75,10 +89,20 @@
 			$closure($this->grammar);
 		}
 
-		public function run(string $rule): void{
+		public function run(string $rule): array{
 			# Parse the rule
 			$nodes = $this->parser->parse($rule);
 
-			echo "<pre>", print_r($nodes, true), "</pre>";
+			# The list of nodes
+			$lst = [];
+
+			# Loop through the nodes
+			foreach( $nodes as $node ){
+				# Evaluate the node
+				$lst[] = $this->system->evaluate($node);
+			}
+
+			# Return the list of nodes
+			return $lst;
 		}
 	}

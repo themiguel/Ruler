@@ -34,6 +34,11 @@
 			$this->children[] = $node;
 		}
 
+		public function getChild(int $idx): Node{
+			# Return child node
+			return $this->children[$idx];
+		}
+
 		public function getChildrenCount(): int{
 			# Return the count of children
 			return count($this->children);
