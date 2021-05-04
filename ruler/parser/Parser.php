@@ -5,6 +5,7 @@
 	use Ruler\Grammar\Production;
 
 	use Ruler\Lexer\Lexer;
+	use Ruler\Lexer\Tokens\Token;
 
 	class Parser{
 		/**
@@ -37,8 +38,8 @@
 
 			# The list of nodes
 			# Convert all the tokens into nodes
-			$nodes = array_map(function($tok){
-				return new Node('node', $tok);
+			$nodes = array_map(function(Token $token){
+				return new Node($token->getName(), $token->getValue());
 			}, $tokens);
 
 			# Finished flag

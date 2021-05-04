@@ -16,12 +16,25 @@
 		 */
 		protected $rules;
 
+		/**
+		 * Production constructor.
+		 * Initializes the production
+		 * @param string $name The name of the production
+		 */
 		public function __construct(string $name){
 			# Initialize the production
 			$this->name  = $name;
 			$this->rules = [];
 		}
 
+		/**
+		 * Checks if any of the definitions matches against the nodes given
+		 * Returns index of the which matched it, or -1 if none matched it
+		 * @param array $nodes The list of nodes to check against
+		 * @param int   $nodes_count The number of nodes in $nodes
+		 * @param int   $idx The index to start checking against
+		 * @return int
+		 */
 		protected function match(array $nodes, int $nodes_count, int $idx): int{
 			# Loop through the rules
 			foreach( $this->rules as $rule_idx => $rule ){
@@ -42,31 +55,20 @@
 
 			# Check the name
 			if( strcmp($matches['name'], $node->getName()) === 0 ){
-				# Matched the name
-				return true;
-			}
+				# Check if they're any parameters set
+				if( isset($matches['params']) ){
+					# Check the parameters of the rule
+					$params = array_map('trim', explode(',', $matches['params']));
 
-			# Check if the node has a class
-			if( $node->hasToken() ){
-				# The names do not match
-				# Maybe the token class matches
-				if( strcmp($matches['name'], $node->getTokenClass()) === 0 ){
-					# Found the match on token class
-					# Check if there's any parameters
-					if( isset($matches['params']) ){
-						# Check the parameters of the rule
-						$params = array_map('trim', explode(',', $matches['params']));
-
-						# Check if the value of the node is in the params
-						if( in_array($node->getToken()->getValue(), $params) === false ){
-							# No match found
-							return false;
-						}
+					# Check if the value of the node is in the params
+					if( $node->hasValue() === false || in_array($node->getValue(), $params) === false ){
+						# No match found
+						return false;
 					}
-
-					# Found a match
-					return true;
 				}
+
+				# Matched by the name
+				return true;
 			}
 
 			# No match found
@@ -96,27 +98,52 @@
 			return true;
 		}
 
+		/**
+		 * Replaces a node with a rule node
+		 * Will create the rule indexed by $rules_idx starting at $idx on $nodes
+		 * Return the new nodes
+		 * @param array $nodes The list of nodes
+		 * @param int   $idx The index of the starting node
+		 * @param int   $rules_idx The index of the rule node to create
+		 * @return Node
+		 */
 		protected function replace(array $nodes, int &$idx, int $rules_idx): Node{
-			# Create the new node
-			$node = new Node($this->name);
-
 			# Get the rule
 			$rule       = $this->rules[$rules_idx];
 			$rule_count = count($rule);
 
-			# Loop through the rule
-			for( $i = 0; $i < $rule_count; $i++ ){
-				# Add the node as a child
-				$node->addChild($nodes[$i + $idx]);
+			# Check the rule count
+			if( $rule_count === 1 ){
+				# This just replaces the current node with the new node
+				# Instead of creating a new lone child node
+				# Create the node with the value of the current node
+				$node = new Node($this->name, $nodes[$idx]->getValue());
+
+				# Return the node
+				return $node;
 			}
+			else{
+				# Create the new node
+				$node = new Node($this->name);
 
-			# Increment the index
-			$idx += $rule_count - 1;
+				# Loop through the rule
+				for( $i = 0; $i < $rule_count; $i++ ){
+					# Add the node as a child
+					$node->addChild($nodes[$i + $idx]);
+				}
 
-			# Return the node
-			return $node;
+				# Increment the index
+				$idx += $rule_count - 1;
+
+				# Return the node
+				return $node;
+			}
 		}
 
+		/**
+		 * Adds a new production definition
+		 * @param string $definition The definition to add
+		 */
 		public function add(string $definition): void{
 			# Split the definition
 			$defs = array_map('trim', explode('|', $definition));
@@ -129,6 +156,14 @@
 			}
 		}
 
+		/**
+		 * Tries to reduce the number of nodes
+		 * Checks the rules against the nodes, if any match
+		 * replaces the nodes with the new node
+		 * Returns true of there was any replacement
+		 * @param array $nodes The list of nodes
+		 * @return bool
+		 */
 		public function reduce(array &$nodes): bool{
 			# Reduced flag
 			$reduced = false;
