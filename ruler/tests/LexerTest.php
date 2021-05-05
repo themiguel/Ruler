@@ -81,6 +81,24 @@
 			$this->assertEquals('()', $tokens[3]->getValue());
 		}
 
+		public function testFuncRule2():void{
+			$lexer = new Lexer();
+			$tokens = $lexer->tokenize('module:func(1)');
+			$this->assertEquals(6, count($tokens));
+			$this->assertInstanceOf(Identifier::class, $tokens[0]);
+			$this->assertInstanceOf(Symbol::class, $tokens[1]);
+			$this->assertInstanceOf(Identifier::class, $tokens[2]);
+			$this->assertInstanceOf(Symbol::class, $tokens[3]);
+			$this->assertInstanceOf(Number::class, $tokens[4]);
+			$this->assertInstanceOf(Symbol::class, $tokens[5]);
+			$this->assertEquals('module', $tokens[0]->getValue());
+			$this->assertEquals(':', $tokens[1]->getValue());
+			$this->assertEquals('func', $tokens[2]->getValue());
+			$this->assertEquals('(', $tokens[3]->getValue());
+			$this->assertEquals(1, $tokens[4]->getValue());
+			$this->assertEquals(')', $tokens[5]->getValue());
+		}
+
 		public function testSimpleExpression():void{
 			$lexer = new Lexer();
 			$tokens = $lexer->tokenize('1 + 2');

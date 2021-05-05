@@ -32,6 +32,6 @@
 			$nodes = $this->parser->parse('3');
 			$this->assertEquals(1, count($nodes));
 			$this->assertEquals('term', $nodes[0]->getName());
-			$this->assertEquals(1, $nodes[0]->getChildrenCount());
+			$this->assertEquals(3, $nodes[0]->getValue());
 		}
 	}
