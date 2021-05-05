@@ -29,9 +29,6 @@
 			# Get the action
 			$action = $mid->getValue();
 
-			echo "<pre>", print_r($left, true), "</pre>";
-			echo "<pre>", print_r($right, true), "</pre>";
-
 			# Check the action
 			if( $action === '*' ){
 				# Return the multiplication of the node
@@ -49,8 +46,6 @@
 				# Return the multiplication of the node
 				return $this->system->evaluate($left) - $this->system->evaluate($right);
 			}
-
-			echo "<pre>", print_r($node, true), "</pre>";
 
 			# Cannot handle this node
 			throw new Exception('Expr: cannot handle node `' . $node->getName() . '`');
