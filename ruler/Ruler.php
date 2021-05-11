@@ -89,7 +89,15 @@
 			$closure($this->grammar);
 		}
 
-		public function run(string $rule): array{
+		/**
+		 * Executes a given rule
+		 * Returns the value of the parsed rule
+		 * Throws exception if the rule could not be executed
+		 * @param string $rule the rule to execute
+		 * @return array
+		 * @throws Exception
+		 */
+		public function exec(string $rule): array{
 			# Parse the rule
 			$nodes = $this->parser->parse($rule);
 
