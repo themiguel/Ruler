@@ -10,54 +10,64 @@
 	use Ruler\Lexer\Tokens\Identifier;
 
 	final class LexerTest extends TestCase{
+		/**
+		 * Lexer variable used
+		 * @var Lexer
+		 */
+		private $lexer;
+
+		public function setUp():void{
+			# Create a grammar
+			$this->lexer = new Lexer();
+		}
+
 		public function testSimpleNumber():void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('123');
+			$tokens = $this->lexer->tokenize('123');
 			$this->assertEquals(1, count($tokens));
 			$this->assertInstanceOf(Number::class, $tokens[0]);
 			$this->assertEquals(123, $tokens[0]->getValue());
 		}
 
 		public function testFloatNumbers():void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('3.1415');
+			$tokens = $this->lexer->tokenize('3.141592');
 			$this->assertEquals(1, count($tokens));
 			$this->assertInstanceOf(Number::class, $tokens[0]);
-			$this->assertEquals(3.1415, $tokens[0]->getValue());
+			$this->assertEquals(3.141592, $tokens[0]->getValue());
 		}
 
 		public function testSimpleIdentifier(): void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('x');
+			$tokens = $this->lexer->tokenize('x');
 			$this->assertEquals(1, count($tokens));
 			$this->assertInstanceOf(Identifier::class, $tokens[0]);
+			$this->assertEquals('x', $tokens[0]->getValue());
 		}
 
 		public function testSimpleSymbol():void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('>=');
+			$tokens = $this->lexer->tokenize('>=');
 			$this->assertEquals(1, count($tokens));
 			$this->assertInstanceOf(Symbol::class, $tokens[0]);
 		}
 
 		public function testEmptyQuotes():void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('""');
+			$tokens = $this->lexer->tokenize('""');
 			$this->assertEquals(1, count($tokens));
 			$this->assertInstanceOf(Quotes::class, $tokens[0]);
 		}
 
 		public function testSimpleQuotes():void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('"There is something in here"');
+			$tokens = $this->lexer->tokenize('"There is something in here"');
 			$this->assertEquals(1, count($tokens));
 			$this->assertInstanceOf(Quotes::class, $tokens[0]);
 			$this->assertEquals('There is something in here', $tokens[0]->getValue());
 		}
 
+		public function testInvalidNumber():void{
+			$this->expectException(\Exception::class);
+			$this->lexer->tokenize('1.2.3.4');
+		}
+
 		public function testConditionalRule1():void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('3 < 4');
+			$tokens = $this->lexer->tokenize('3 < 4');
 			$this->assertEquals(3, count($tokens));
 			$this->assertInstanceOf(Number::class, $tokens[0]);
 			$this->assertInstanceOf(Symbol::class, $tokens[1]);
@@ -68,8 +78,7 @@
 		}
 
 		public function testFuncRule1():void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('module:func()');
+			$tokens = $this->lexer->tokenize('module:func()');
 			$this->assertEquals(4, count($tokens));
 			$this->assertInstanceOf(Identifier::class, $tokens[0]);
 			$this->assertInstanceOf(Symbol::class, $tokens[1]);
@@ -82,8 +91,7 @@
 		}
 
 		public function testFuncRule2():void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('module:func(1)');
+			$tokens = $this->lexer->tokenize('module:func(1)');
 			$this->assertEquals(6, count($tokens));
 			$this->assertInstanceOf(Identifier::class, $tokens[0]);
 			$this->assertInstanceOf(Symbol::class, $tokens[1]);
@@ -100,8 +108,7 @@
 		}
 
 		public function testSimpleExpression():void{
-			$lexer = new Lexer();
-			$tokens = $lexer->tokenize('1 + 2');
+			$tokens = $this->lexer->tokenize('1 + 2');
 			$this->assertEquals(3, count($tokens));
 			$this->assertInstanceOf(Number::class, $tokens[0]);
 			$this->assertInstanceOf(Symbol::class, $tokens[1]);
