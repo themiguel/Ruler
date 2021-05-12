@@ -81,8 +81,8 @@
 					}
 				}
 
-				# Add the nodes into the roots
-				$roots[] = $nodes;
+				# Add the root node into the roots list
+				$roots[] = $nodes[0];
 			}
 
 			# Return the roots
