@@ -56,15 +56,25 @@
 			return mb_ord($this->string[$this->curr], 'utf-8');
 		}
 
-		public function is(string $char, bool $peek = false): bool{
-			# Check the peek
-			if( $peek ){
-				# Use the peek
-				return $char == $this->peek();
+		/**
+		 * Returns whether the current character (or peek) matches the value
+		 * Can pass an array to check multiple values
+		 * @param mixed $value The value(s) to check against
+		 * @param bool  $peek  Whether to check the peek or not
+		 * @return bool
+		 */
+		public function is($value, bool $peek = false): bool{
+			# Get the character we are checking
+			$char = $peek === false ? $this->string[$this->curr] : $this->peek();
+
+			# Check the value type
+			if( is_array($value) ){
+				# Return whether the character is in the array
+				return in_array($char, $value);
 			}
 
-			# Return whether the current matches the char
-			return $char == $this->string[$this->curr];
+			# Return whether the char matches the value
+			return $char == $value;
 		}
 
 		/**
@@ -147,6 +157,20 @@
 		public function peekCode(): int{
 			# Return the peek code, if available
 			return $this->curr + 1 < $this->length ? mb_ord($this->string[$this->curr + 1], 'utf-8') : 0;
+		}
+
+		/**
+		 * Checks the current character (or peek) against a regular expression
+		 * @param string $regex The regular expression to use
+		 * @param bool   $peek Whether to use peek or not
+		 * @return bool
+		 */
+		public function regex(string $regex, bool $peek = false): bool{
+			# Get the character we are checking
+			$char = $peek === false ? $this->string[$this->curr] : $this->peek();
+
+			# Return whether the regular expression matches
+			return preg_match($regex, $char) === 1;
 		}
 
 		/**

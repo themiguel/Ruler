@@ -32,8 +32,8 @@
 					# Add the character
 					$token = $xtring->current();
 
-					# Loop through the alphanumeric values
-					while( $xtring->isAlphanumeric(true) && $xtring->next() ){
+					# Loop through the alphanumeric and _ values
+					while( $xtring->regex('/[A-Za-z0-9_]/', true) && $xtring->next() ){
 						# Add the token
 						$token .= $xtring->current();
 					}
