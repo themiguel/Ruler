@@ -32,39 +32,60 @@
 		 * @throws \Exception
 		 */
 		public function parse(string $input): array{
-			# Get the tokens of the input
-			$lexer  = new Lexer();
-			$tokens = $lexer->tokenize($input);
-
-			# The list of nodes
-			# Convert all the tokens into nodes
-			$nodes = array_map(function(Token $token){
-				return new Node($token->getName(), $token->getValue());
-			}, $tokens);
-
-			# Finished flag
-			$finished = false;
-
-			# Loop until we are finished
-			while( $finished === false ){
-				# Set the finished flag
-				$finished = true;
-
-				/**
-				 * Loop through the grammar
-				 * @var Production $prod
-				 */
-				foreach( $this->grammar as $prod ){
-					# Check if the production matches
-					# Find and replace
-					if( $prod->reduce($nodes) ){
-						# Did a replace
-						$finished = false;
-					}
-				}
+			# Check if there's a separator
+			if( $this->grammar->hasSeparator() ){
+				# Get the inputs
+				$inputs = array_map('trim', explode($this->grammar->getSeparator(), $input));
+			}
+			else{
+				# Use the entire input
+				$inputs = [$input];
 			}
 
-			# Return the nodes
-			return $nodes;
+			# The root nodes
+			$roots = [];
+
+			# Create the lexer
+			$lexer  = new Lexer();
+
+			# Loop through the inputs
+			foreach( $inputs as $input ){
+				# Get the tokens of the input
+				$tokens = $lexer->tokenize($input);
+
+				# The list of nodes
+				# Convert all the tokens into nodes
+				$nodes = array_map(function(Token $token){
+					return new Node($token->getName(), $token->getValue());
+				}, $tokens);
+
+				# Finished flag
+				$finished = false;
+
+				# Loop until we are finished
+				while( $finished === false ){
+					# Set the finished flag
+					$finished = true;
+
+					/**
+					 * Loop through the grammar
+					 * @var Production $prod
+					 */
+					foreach( $this->grammar as $prod ){
+						# Check if the production matches
+						# Find and replace
+						if( $prod->reduce($nodes) ){
+							# Did a replace
+							$finished = false;
+						}
+					}
+				}
+
+				# Add the nodes into the roots
+				$roots[] = $nodes;
+			}
+
+			# Return the roots
+			return $roots;
 		}
 	}
